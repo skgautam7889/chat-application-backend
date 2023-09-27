@@ -77,15 +77,32 @@ exports.Login = async (req, res) => {
       expiresIn: "24h",
     }
   );
-  checkUserExists.token = "Bearer "+token;
-  // checkUserExists.password = undefined;
+  checkUserExists.token = "Bearer " + token;
 
   return res.status(200).json(checkUserExists);
   return res.status(400).json({
     success: false,
     message: "Incorrect Password"
   })
-  
+
   // const username = req.body.username;
   // const password = req.body.password;
+}
+
+exports.getUserById = async (req, res) => {
+  if (!req.user?.id) {
+    return res.status(401).json({
+      success: true,
+      message: "Something went wrong while validating the token!"
+    })
+  }
+  try {
+
+    // Check if User Exists or Not
+    const user = await userServices.findUserById(req.user.id);
+
+    res.json({ data: user, data1: user?.profile, status: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }
